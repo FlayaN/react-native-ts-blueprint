@@ -1,25 +1,34 @@
 import React, { Component } from "react";
 import { View, Text } from "react-native";
+import {connect} from "react-redux";
 
 // See src/declarations.d.ts
 import Button from "react-native-button";
 
-interface Props {
+interface OwnProps {
     max: number;
     message?: string | number;
     alert?: string | number;
     style: React.ViewStyle;
 }
 
+interface StateProps {
+    UserName: string;
+}
+
+interface Props extends OwnProps{
+    store: StateProps;
+}
+
 interface State {
     counter: number;
 }
 
-export default class HelloWorld extends Component<Props, State> {
+class HelloWorld extends Component<Props, State> {
     static defaultProps = {
         message: "Press here",
-        alert: "Hello world!",
-    };
+        alert: "Hello world!"
+    } as Props;
 
     state = {
         counter: 0,
@@ -31,7 +40,7 @@ export default class HelloWorld extends Component<Props, State> {
             return this.setState({ counter });
         }
         // Alert after re-rendering
-        return this.setState({ counter: 0 }, () => alert(this.props.alert));
+        return this.setState({ counter: 0 }, () => alert(this.props.alert + this.props.store.UserName));
     }
 
     render() {
@@ -47,3 +56,13 @@ export default class HelloWorld extends Component<Props, State> {
         );
     }
 }
+
+function mapStateToProps(state: StoreDef, ownProps: OwnProps): Props {
+    return {...ownProps,
+        store: {
+            UserName: state.User.Name
+        } as StateProps
+    } as Props;
+}
+
+export default connect(mapStateToProps)(HelloWorld)
